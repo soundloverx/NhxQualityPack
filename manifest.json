@@ -1,0 +1,9 @@
+{
+  "name": "NhxQualityPack",
+  "version_number": "1.0.0",
+  "website_url": "",
+  "description": "Private mod: a quality-of-life pack - quick stack, sort, lock items, hotbar swap, and build/craft from nearby containers. Not published on Thunderstore.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2202"
+  ]
+}
