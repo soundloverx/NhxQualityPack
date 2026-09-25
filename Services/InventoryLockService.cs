@@ -16,15 +16,25 @@ namespace NhxQualityPack
             return LockService.IsLocked(itemName) ? 0 : inventory.CountItems(itemName);
         }
 
+        internal static bool HaveLockedItem(Inventory inventory, string itemName)
+        {
+            return LockService.IsLocked(itemName) && inventory.HaveItem(itemName);
+        }
+
+        internal static void ShowLockedItemsMessage(Humanoid user)
+        {
+            user.Message(MessageHud.MessageType.Center, "Inventory items locked");
+        }
+
         // Shown by the station fuel patches when nothing could be added, in place of vanilla's own fallback
         // (which doesn't know about locks and would spend a locked stack).
         internal static void ShowNoFuelMessage(Humanoid user, Inventory inventory, params string[] fuelNames)
         {
             foreach (string fuelName in fuelNames)
             {
-                if (LockService.IsLocked(fuelName) && inventory.HaveItem(fuelName))
+                if (HaveLockedItem(inventory, fuelName))
                 {
-                    user.Message(MessageHud.MessageType.Center, "Inventory items locked");
+                    ShowLockedItemsMessage(user);
                     return;
                 }
             }

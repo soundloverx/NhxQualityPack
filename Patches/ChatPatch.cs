@@ -27,6 +27,7 @@ namespace NhxQualityPack.Patches
         private static Talker.Type _incomingType;
         private static bool _missedMessages;
         private static string _pendingTimestamp;
+        private static bool _pendingSound;
         private static DateTime? _heldMessageTime;
 
         private class HeldMessage
@@ -246,12 +247,13 @@ namespace NhxQualityPack.Patches
             return false;
         }
 
-        // Chat messages get a [HH:mm:ss] local-time prefix in the chat window. Vanilla's own timestamp option uses a long
-        // "[MM-dd-yyyy HH:mm:ss]" format, so instead the chat-message overloads of Terminal.AddString mark the line and
-        // the plain AddString(string) they finish with adds the prefix. Other lines (command help and output) aren't
-        // stamped.
+        // Chat messages get a [HH:mm:ss] local-time prefix in the chat window, and other players' messages a notification
+        // sound. Vanilla's own timestamp option uses a long "[MM-dd-yyyy HH:mm:ss]" format, so instead the chat-message
+        // overloads of Terminal.AddString mark the line and the plain AddString(string) they finish with adds the prefix
+        // and plays the sound - only once the line is really written, as vanilla drops messages from unknown senders.
+        // Other lines (command help and output) aren't stamped and stay silent.
         [HarmonyPatch]
-        private static class ChatTimestampPatch
+        private static class ChatMessageLinePatch
         {
             private static IEnumerable<MethodBase> TargetMethods()
             {
@@ -259,20 +261,31 @@ namespace NhxQualityPack.Patches
                 yield return AccessTools.Method(typeof(Terminal), nameof(Terminal.AddString), new[] { typeof(string), typeof(string), typeof(Talker.Type), typeof(bool) });
             }
 
-            private static void Prefix(Terminal __instance, bool timestamp)
+            // The two overloads differ in their first parameter (the sender's platform ID, or a plain name for held
+            // messages), so it's read from __args. Held messages are treated as other players': the local player's own
+            // message would have to arrive after they'd already died to end up held.
+            private static void Prefix(Terminal __instance, bool timestamp, object[] __args)
             {
-                if (Plugin.WorldChatEnabled && __instance is Chat && !timestamp)
+                if (!Plugin.WorldChatEnabled || !(__instance is Chat))
+                {
+                    return;
+                }
+
+                if (!timestamp)
                 {
                     // ':' in a custom format is the culture's time separator, so the culture is pinned to keep it a colon.
                     _pendingTimestamp = "[" + (_heldMessageTime ?? DateTime.Now).ToString("HH:mm:ss", CultureInfo.InvariantCulture) + "] ";
                 }
+
+                _pendingSound = Plugin.ChatSoundAlertEnabled && !(__args[0] is PlatformUserID sender && sender == PlatformManager.DistributionPlatform.LocalUser.PlatformUserID);
             }
 
-            // Runs even if the method returned early (e.g. an unknown sender) or threw, so a stamp never leaks onto an
-            // unrelated line.
+            // Runs even if the method returned early (e.g. an unknown sender) or threw, so a stamp or sound never leaks
+            // onto an unrelated line.
             private static void Finalizer()
             {
                 _pendingTimestamp = null;
+                _pendingSound = false;
             }
         }
 
@@ -284,6 +297,12 @@ namespace NhxQualityPack.Patches
             {
                 text = _pendingTimestamp + text;
                 _pendingTimestamp = null;
+            }
+
+            if (_pendingSound)
+            {
+                _pendingSound = false;
+                ChatSoundService.Play();
             }
         }
 

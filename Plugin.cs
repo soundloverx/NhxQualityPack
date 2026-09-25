@@ -15,7 +15,7 @@ namespace NhxQualityPack
     {
         private const string PluginGuid = "NhxQualityPack";
         private const string PluginName = "NhxQualityPack";
-        private const string PluginVersion = "1.0.0";
+        private const string PluginVersion = "1.0.1";
 
         internal static Plugin Instance { get; private set; }
         internal static ManualLogSource Log { get; private set; }
@@ -25,6 +25,7 @@ namespace NhxQualityPack
         private ConfigEntry<KeyboardShortcut> _fillAllModifierKey;
         private ConfigEntry<KeyboardShortcut> _hotbarSwapShortcut;
         private ConfigEntry<bool> _worldChat;
+        private ConfigEntry<bool> _chatSoundAlert;
         private Harmony _harmonyInstance;
 
         internal static int SearchRadius => Instance?._searchRadius != null ? Instance._searchRadius.Value : 25;
@@ -34,6 +35,8 @@ namespace NhxQualityPack
         internal static KeyboardShortcut HotbarSwapShortcut => Instance?._hotbarSwapShortcut != null ? Instance._hotbarSwapShortcut.Value : new KeyboardShortcut(KeyCode.BackQuote);
 
         internal static bool WorldChatEnabled => Instance?._worldChat != null ? Instance._worldChat.Value : true;
+
+        internal static bool ChatSoundAlertEnabled => Instance?._chatSoundAlert != null ? Instance._chatSoundAlert.Value : true;
 
         private void Awake()
         {
@@ -76,6 +79,13 @@ namespace NhxQualityPack
                 "World Chat",
                 true,
                 "Send normal chat messages (and /s shouts) to every player in the world instead of only nearby players. They're shown like normal chat, without a marker on the map, and the sender's name is added when they're far away or out of view. Chat messages also get a [HH:mm] timestamp in the chat window. Turning this off leaves chat exactly as in the unmodded game."
+            );
+
+            _chatSoundAlert = Config.Bind(
+                "Chat",
+                "Chat Sound Alert",
+                true,
+                "Play a short sound when another player's chat message appears in the chat window (your own messages are silent). It follows the game's sound effects volume. Only works while World Chat is on."
             );
 
             Assembly assembly = Assembly.GetExecutingAssembly();

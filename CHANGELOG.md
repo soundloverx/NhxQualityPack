@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.1
+- Fixed: feeding a battering ram, or a smelter/kiln that accepts several items (e.g. the charcoal kiln's wood types), could spend a locked item type from your inventory
+- Adding ore to a smelter/kiln or wood to a battering ram now shows `Inventory items locked` when only locked items are left, like the fuel stations do
+- Chat Sound Alert - a short sound plays when another player's chat message appears in the chat window. It follows the sound effects volume and can be turned off with the `Chat Sound Alert` setting
+
 ## v1.0.0
 - Quick Stack, Sort, Lock Items
 - Hotbar Swap

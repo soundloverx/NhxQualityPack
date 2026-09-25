@@ -25,9 +25,11 @@ namespace NhxQualityPack.Patches
             return (float)GetFuelMethod.Invoke(smelter, null);
         }
 
+        // Also covers the battering ram: its engine is a kiln-style Smelter with no fuel switch, where the
+        // wood types it burns (wood, fine wood, core wood, blackwood) are fed in as ore.
         [HarmonyPatch(typeof(Smelter), nameof(Smelter.OnAddOre))]
         [HarmonyPrefix]
-        private static bool OnAddOrePrefix(Smelter __instance, Humanoid user, ItemDrop.ItemData item, ZNetView ___m_nview)
+        private static bool OnAddOrePrefix(Smelter __instance, Humanoid user, ref ItemDrop.ItemData item, ZNetView ___m_nview)
         {
             Player player = user as Player;
 
@@ -54,18 +56,24 @@ namespace NhxQualityPack.Patches
 
             if (!fillAll)
             {
-                return TryAddSingleOre(__instance, user, ___m_nview, player, inventory);
+                return TryAddSingleOre(__instance, user, ___m_nview, player, inventory, ref item);
             }
 
             return TryFillAllOre(__instance, user, ___m_nview, player, inventory, queueSize);
         }
 
-        private static bool TryAddSingleOre(Smelter __instance, Humanoid user, ZNetView nview, Player player, Inventory inventory)
+        private static bool TryAddSingleOre(Smelter __instance, Humanoid user, ZNetView nview, Player player, Inventory inventory, ref ItemDrop.ItemData item)
         {
+            // Pick the inventory item for vanilla instead of letting it search: its own lookup takes the first
+            // accepted type found in the inventory, so a locked type listed ahead of an unlocked one got spent.
             foreach (Smelter.ItemConversion conversion in __instance.m_conversion)
             {
-                if (InventoryLockService.HaveUnlockedItem(inventory, conversion.m_from.m_itemData.m_shared.m_name))
+                string itemName = conversion.m_from.m_itemData.m_shared.m_name;
+
+                if (InventoryLockService.HaveUnlockedItem(inventory, itemName))
                 {
+                    item = inventory.GetItem(itemName);
+
                     return true;
                 }
             }
@@ -87,9 +95,7 @@ namespace NhxQualityPack.Patches
                 return false;
             }
 
-            // vanilla's own fallback doesn't know about locks, so only let it run when none of the
-            // accepted ore types are locked - otherwise it would happily spend a locked stack we skipped
-            return !AnyConversionLocked(__instance.m_conversion);
+            return DeferToVanillaUnlessLocked(__instance, user, inventory);
         }
 
         private static bool TryFillAllOre(Smelter __instance, Humanoid user, ZNetView nview, Player player, Inventory inventory, int queueSize)
@@ -165,9 +171,7 @@ namespace NhxQualityPack.Patches
 
             if (added.Count == 0)
             {
-                // nothing found via containers/extra inventory stacks - let vanilla try its own single-item
-                // pull, but only when none of the accepted ore types are locked, for the same reason as above
-                return !AnyConversionLocked(__instance.m_conversion);
+                return DeferToVanillaUnlessLocked(__instance, user, inventory);
             }
 
             List<string> messages = new List<string>();
@@ -298,17 +302,22 @@ namespace NhxQualityPack.Patches
             counts[key] = existing + amount;
         }
 
-        private static bool AnyConversionLocked(List<Smelter.ItemConversion> conversions)
+        // Used once nothing could be added from unlocked inventory stacks or nearby chests. Vanilla's own fallback
+        // doesn't know about locks and would spend a locked stack we skipped, so it only gets to run (and show its
+        // own "nothing to add" message) when no accepted ore type is sitting locked in the inventory.
+        private static bool DeferToVanillaUnlessLocked(Smelter smelter, Humanoid user, Inventory inventory)
         {
-            foreach (Smelter.ItemConversion conversion in conversions)
+            foreach (Smelter.ItemConversion conversion in smelter.m_conversion)
             {
-                if (LockService.IsLocked(conversion.m_from.m_itemData.m_shared.m_name))
+                if (InventoryLockService.HaveLockedItem(inventory, conversion.m_from.m_itemData.m_shared.m_name))
                 {
-                    return true;
+                    InventoryLockService.ShowLockedItemsMessage(user);
+
+                    return false;
                 }
             }
 
-            return false;
+            return true;
         }
     }
 }

@@ -83,19 +83,20 @@ Feeding fuel, ore, or ammo also pulls from nearby chests when your own inventory
 
 - Fireplaces (campfires, hearths, bonfires) - fuel
 - Smelters, charcoal kilns, and blast furnaces - ore and fuel
+- Battering rams - wood (any of the wood types it burns)
 - Cooking stations (cooking station, iron cooking station, stone oven, and similar) - fuel only (food to cook still has to come from your inventory)
 - Shield generators - fuel (any of the bone types it accepts)
 - Turrets - ammunition
 
-For fireplace fuel, shield generator fuel, and smelter/cooking station fuel and ore specifically, a [locked](#lock-items) item type in your own inventory is never spent automatically - only nearby chests are used to top it up. This does not apply to building pieces or manual crafting, which use locked inventory items like any other.
+For fireplace fuel, shield generator fuel, smelter/cooking station fuel and ore, and battering ram wood specifically, a [locked](#lock-items) item type in your own inventory is never spent automatically - only nearby chests are used to top it up. This does not apply to building pieces or manual crafting, which use locked inventory items like any other.
 
-If a fuel station can't be refuelled because no usable fuel was found, a message explains why: `Inventory items locked` when the only fuel available is a locked item type in your own inventory, or `Unable to find fuel` when there is none in your inventory or in nearby chests. This applies to fireplaces/lights, smelters/kilns/blast furnaces, cooking stations, and shield generators.
+If a fuel station can't be refuelled because no usable fuel was found, a message explains why: `Inventory items locked` when the only fuel available is a locked item type in your own inventory, or `Unable to find fuel` when there is none in your inventory or in nearby chests. This applies to fireplaces/lights, smelters/kilns/blast furnaces, cooking stations, and shield generators. Adding ore to a smelter/kiln or wood to a battering ram shows `Inventory items locked` the same way when the only accepted items left are locked ones in your inventory.
 
 The crafting/building requirement panel always shows the combined inventory + nearby-container amount (e.g. `200/4` if you need 4 wood and have 200 spread across your inventory and nearby chests combined), instead of vanilla's plain required-amount display. It's highlighted when nearby containers are what's making up the difference.
 
 If another installed mod that also pulls from nearby containers has already paid for a build or craft, this mod leaves it alone instead of paying a second time. Running two mods that do the same job is still best avoided, since they can disagree about what's available.
 
-Holding the fill-all modifier key (default **Left Shift**) while interacting with a fireplace/light, a smelter/kiln, a cooking station's fuel switch, or a shield generator fills it to capacity in one go - fuel or ore is pulled from your inventory first, then nearby containers, instead of adding one unit per interaction. A hover-text hint appears on these objects showing the key when using it would do something.
+Holding the fill-all modifier key (default **Left Shift**) while interacting with a fireplace/light, a smelter/kiln, a battering ram, a cooking station's fuel switch, or a shield generator fills it to capacity in one go - fuel or ore is pulled from your inventory first, then nearby containers, instead of adding one unit per interaction. A hover-text hint appears on these objects showing the key when using it would do something.
 
 ### World Chat
 
@@ -106,6 +107,7 @@ Normal chat messages are sent to every player in the world instead of only playe
 - The sender's name is added in front of the floating text when they're further away than normal chat reaches (15 m) or out of view, so it's clear who said it. If they're too far away to be loaded, the text stays where they were standing when they spoke
 - A map ping and a chat message from the same player both stay up, instead of one replacing the other
 - Chat messages in the chat window start with the local time they arrived, in 24-hour format (e.g. `[14:05]`)
+- A short sound plays when another player's chat message appears in the chat window (your own messages are silent). It follows the game's sound effects volume, messages shown together play it only once, and it can be turned off with the `Chat Sound Alert` config setting
 - Chat messages that arrive while you're respawning after a death, loading into the world, or watching the arrival intro are kept and shown in the chat window once you're back, instead of being lost (vanilla discards them). Up to 50 messages are kept. Nearby-only chat from players who have World Chat turned off can't be kept this way.
 - Messages that arrive while the screen is dark - lying dead, going through a portal, or sleeping - show up as usual, and the chat window pops open again once you can see, so they aren't missed behind the loading screen
 - Whispers (`/w`) are unchanged
@@ -137,3 +139,4 @@ Configuration options include:
 - Fill-all modifier key (default Left Shift)
 - Hotbar swap keyboard shortcut (default backtick)
 - World chat on/off (default on)
+- Chat sound alert on/off (default on, needs World Chat on)
