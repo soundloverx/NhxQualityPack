@@ -2,7 +2,7 @@
 
 A private mod for personal use with friends - not published on Thunderstore.
 
-A collection of quality-of-life features. Automatically store items from your inventory into nearby chests you have access to, within a configurable radius. Also sorts your inventory and any chest you open, lets you lock item types so they're never auto-deposited, swaps hotbar rows, and pulls building/crafting materials and fuel from nearby chests.
+A collection of quality-of-life features. Automatically store items from your inventory into nearby chests you have access to, within a configurable radius. Also sorts your inventory and any chest you open, lets you lock item types so they're never auto-deposited, swaps hotbar rows, pulls building/crafting materials and fuel from nearby chests, and shows taming progress under a creature's health bar.
 
 This mod replaces **NSimpleDeposit** - remove it when installing this one. Item locks made with NSimpleDeposit carry over; config settings do not (the config file is now `NhxQualityPack.cfg`).
 
@@ -113,6 +113,16 @@ Normal chat messages are sent to every player in the world instead of only playe
 - Whispers (`/w`) are unchanged
 - Players without this mod still receive world chat messages as normal chat, but for them the floating text doesn't follow the sender or show their name
 
+### Taming Progress
+
+A wild creature that's being tamed gets a cyan bar under its health bar showing how far along taming is. It fills from empty to full as the creature goes from 0% to 100% tamed.
+
+- It only appears once taming has started, i.e. once the creature's hover text shows a `Tameness` percentage instead of `Wild`, and disappears once the creature is tamed
+- It shows whenever the creature's health bar does, so it follows the game's rules for that: within 10 m, and only for a while after you've looked at the creature
+- Taming progress only advances every 3 seconds in the base game, so the bar moves in small steps
+- It works for creatures being tamed by any player, not just you
+- It can be turned off with the `Show Taming Progress` config setting, which leaves creature health bars exactly as in the unmodded game
+
 ## Container Access
 
 Quick Stack and chest sorting work with any player-built container you currently have access to, not only ones you personally built.
@@ -140,3 +150,4 @@ Configuration options include:
 - Hotbar swap keyboard shortcut (default backtick)
 - World chat on/off (default on)
 - Chat sound alert on/off (default on, needs World Chat on)
+- Show taming progress on/off (default on)

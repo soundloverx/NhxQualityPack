@@ -107,6 +107,7 @@
     <Compile Include="Patches\ContainerPatch.cs" />
     <Compile Include="Patches\CookingStationSupplyPatch.cs" />
     <Compile Include="Patches\CraftRequirementsPatch.cs" />
+    <Compile Include="Patches\EnemyHudPatch.cs" />
     <Compile Include="Patches\FireplaceFuelPatch.cs" />
     <Compile Include="Patches\InventoryGridPatch.cs" />
     <Compile Include="Patches\InventoryGuiPatch.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Services\QuickStackService.cs" />
     <Compile Include="UI\InventoryUiController.cs" />
     <Compile Include="UI\LockBorderRenderer.cs" />
+    <Compile Include="UI\TamingBarRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\ChatMessage.wav">

@@ -15,7 +15,7 @@ namespace NhxQualityPack
     {
         private const string PluginGuid = "NhxQualityPack";
         private const string PluginName = "NhxQualityPack";
-        private const string PluginVersion = "1.0.1";
+        private const string PluginVersion = "1.0.2";
 
         internal static Plugin Instance { get; private set; }
         internal static ManualLogSource Log { get; private set; }
@@ -26,6 +26,7 @@ namespace NhxQualityPack
         private ConfigEntry<KeyboardShortcut> _hotbarSwapShortcut;
         private ConfigEntry<bool> _worldChat;
         private ConfigEntry<bool> _chatSoundAlert;
+        private ConfigEntry<bool> _showTamingProgress;
         private Harmony _harmonyInstance;
 
         internal static int SearchRadius => Instance?._searchRadius != null ? Instance._searchRadius.Value : 25;
@@ -37,6 +38,8 @@ namespace NhxQualityPack
         internal static bool WorldChatEnabled => Instance?._worldChat != null ? Instance._worldChat.Value : true;
 
         internal static bool ChatSoundAlertEnabled => Instance?._chatSoundAlert != null ? Instance._chatSoundAlert.Value : true;
+
+        internal static bool ShowTamingProgress => Instance?._showTamingProgress != null ? Instance._showTamingProgress.Value : true;
 
         private void Awake()
         {
@@ -86,6 +89,13 @@ namespace NhxQualityPack
                 "Chat Sound Alert",
                 true,
                 "Play a short sound when another player's chat message appears in the chat window (your own messages are silent). It follows the game's sound effects volume. Only works while World Chat is on."
+            );
+
+            _showTamingProgress = Config.Bind(
+                "HUD",
+                "Show Taming Progress",
+                true,
+                "Show a bar under a wild creature's health bar with its taming progress. It only appears once taming has started (the creature's hover text shows a Tameness percentage) and disappears once the creature is tamed. Turning this off leaves creature health bars exactly as in the unmodded game."
             );
 
             Assembly assembly = Assembly.GetExecutingAssembly();
